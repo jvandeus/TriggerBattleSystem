@@ -2,7 +2,7 @@
 The goal of this project is to have a smaller scoped objective in order further learn game developement using unity as well as get closer to some kind of playable prototype for a larger rpg-like video game.
 
 ## Features In Development.
-- isometric view
+- top town view based on square tiles
 - visual/audio undecided - use placeholder assets all around.
 - player characters with basic stats. they don't even have to do anything just yet, but being view-able in some way like the unity inspector would be nice:
   - HP
