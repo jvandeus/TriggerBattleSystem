@@ -24,5 +24,8 @@ The sections below will likely change throughout development and will mostly ser
 
 ## Phase 2 Features&Goals
 ### After phase 1, one or more of the following could be the next development focus.
+- game saving and loading system.
+  - should be able to set stats, save it, and load a saved file.
+- create basic GUI for displaying stats
 - create some kind of AOE attack or magic
 - investigate and implement verticality in the evironment in some fasion, possiblly faked vertical elements were its all just based off a stat and the art only makes it look higher up.
