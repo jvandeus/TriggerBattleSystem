@@ -7,13 +7,13 @@ using System.Collections.Generic;
 // static class for extending enumeration methods.
 public static class StatExtensions
 {
-	// static variables can be defined to use winthin the extention methods.
+	// bitwise stat variables for defining centralized stat types and conditions
     public static StatType RegenStats = StatType.HP | StatType.MP;
     
     // this may not be the best method or used in the future, but i wanted to keep it here for future referance. This would allow one to do something like stat.canAutoRegen
     public static bool canAutoRegen(this StatType stat)
     {
-    	// bitwise and to determine if the flag is is in the defined stat set.
+    	// bitwise AND operation to determine if the flag is is in the defined stat set.
     	return (RegenStats & stat) == stat ? true : false;
     }
 }
@@ -39,7 +39,8 @@ public class CharacterStats : MonoBehaviour {
 	public int level;
 	public int xp;
 	public StatusType status;
-	public Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>();
+	private Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>();
+	// TODO: look into if the dictionary is the way do go. Might not be since it throws expections if elements are not added with the .Add function.
 	public float MaxHitPoints
 	{
 		get { return baseStats[StatType.HP]; }
@@ -91,12 +92,13 @@ public class CharacterStats : MonoBehaviour {
 
 	// All essential intialization after the component is instantiated and before the component gets enabled.
 	void Awake () {
-		// initialize all stats to zero
+		// TODO: initialize all stats in the baseStats dictionary to 0 with the .Add() function
 		
 	}
 
 	// Initialization after the component first gets enabled. This happens on the very next Update() call.
 	void Start () {
+		// display stats on screen somehow.
 	}
 
 	public static int rollDiceDropLowest(int diceAmount, int diceSides, int dropAmount)
@@ -131,7 +133,7 @@ public class CharacterStats : MonoBehaviour {
 		// loop and increment the stat type back until we hit the NONE type and we are done.
 		while (stat != StatType.NONE && count < 20) {
 			Debug.Log("Rolling for state type"+stat.ToString());
-			this.baseStats[stat] = rollDiceDropLowest(4, 6, 1);
+			this.baseStats[stat] = (float)rollDiceDropLowest(4, 6, 1);
 			stat--;
 			count++;
 		}
@@ -149,7 +151,7 @@ public class CharacterStats : MonoBehaviour {
 		// loop and increment the stat type back until we hit the NONE type and we are done.
 		while (stat != StatType.NONE && count < 20) {
 			Debug.Log("Rolling for state type"+stat.ToString());
-			this.baseStats[stat] = rollDiceDropLowest(4, 6, 1);
+			this.baseStats[stat] = (float)rollDiceDropLowest(4, 6, 1);
 			stat--;
 			count++;
 		}
