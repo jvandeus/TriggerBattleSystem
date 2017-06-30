@@ -3,7 +3,35 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum StatType {MAXHP, MAXMP, SPD, STR, DEX, INT};
+
+// static class for extending enumeration methods.
+public static class StatExtensions
+{
+	// static variables can be defined to use winthin the extention methods.
+    public static StatType RegenStats = StatType.HP | StatType.MP;
+    
+    // this may not be the best method or used in the future, but i wanted to keep it here for future referance. This would allow one to do something like stat.canAutoRegen
+    public static bool canAutoRegen(this StatType stat)
+    {
+    	// bitwise and to determine if the flag is is in the defined stat set.
+    	return (RegenStats & stat) == stat ? true : false;
+    }
+}
+
+// NOTE: referance here: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/enumeration-types
+// define the stats as flags to they can easily be for centralized condition/requirements checking.
+[Flags]
+public enum StatType {
+	NONE = 0x0,
+	HP = 0x1,
+	MP = 0x2,
+	SPD = 0x4,
+	STR = 0x8,
+	DEX = 0x10,
+	INT = 0x20
+};
+
+// defining the different status this character can be in
 public enum StatusType {HEALTHY, KNOCKOUT, DEAD};
 
 // TODO: figure out the proper components needed
@@ -11,58 +39,60 @@ public class CharacterStats : MonoBehaviour {
 	public int level;
 	public int xp;
 	public StatusType status;
-	public float[] baseStats;
+	public Dictionary<StatType, float> baseStats = new Dictionary<StatType, float>();
 	public float MaxHitPoints
 	{
-		get { return baseStats[(int)StatType.MAXHP]; }
+		get { return baseStats[StatType.HP]; }
 		set
 		{
-			baseStats[(int)StatType.MAXHP] = value;
+			baseStats[StatType.HP] = value;
 		}
 	}
 	public float MaxMagicPoints
 	{
-		get { return baseStats[(int)StatType.MAXMP]; }
+		get { return baseStats[StatType.MP]; }
 		set
 		{
-			baseStats[(int)StatType.MAXMP] = value;
+			baseStats[StatType.MP] = value;
 		}
 	}
 	public float Speed
 	{
-		get { return baseStats[(int)StatType.SPD]; }
+		get { return baseStats[StatType.SPD]; }
 		set
 		{
-			baseStats[(int)StatType.SPD] = value;
+			baseStats[StatType.SPD] = value;
 		}
 	}
 	public float Strength
 	{
-		get { return baseStats[(int)StatType.STR]; }
+		get { return baseStats[StatType.STR]; }
 		set
 		{
-			baseStats[(int)StatType.STR] = value;
+			baseStats[StatType.STR] = value;
 		}
 	}
 	public float Dexterity
 	{
-		get { return baseStats[(int)StatType.DEX]; }
+		get { return baseStats[StatType.DEX]; }
 		set
 		{
-			baseStats[(int)StatType.DEX] = value;
+			baseStats[StatType.DEX] = value;
 		}
 	}
 	public float Intelligence
 	{
-		get { return baseStats[(int)StatType.INT]; }
+		get { return baseStats[StatType.INT]; }
 		set
 		{
-			baseStats[(int)StatType.INT] = value;
+			baseStats[StatType.INT] = value;
 		}
 	}
 
 	// All essential intialization after the component is instantiated and before the component gets enabled.
 	void Awake () {
+		// initialize all stats to zero
+		
 	}
 
 	// Initialization after the component first gets enabled. This happens on the very next Update() call.
@@ -89,17 +119,38 @@ public class CharacterStats : MonoBehaviour {
 		return total;
 	}
 
-	// randomize all stats to an initial state. For now we can do a 4d6, drop the lowest for each stat.
+	// randomize all stats. For now we can do a 4d6, drop the lowest for each stat.
 	public void randomizeBaseStats()
 	{
-		// iterate through all stats in the enum
-		StatType stat = StatType.MAXHP;
-		// TEMP FOR DEBUG!!
+		// get the values of the enum so we may iterate through them
+		var values = Enum.GetValues(typeof(StatType));
+		// set the value to the last in the enum
+		StatType stat = (StatType) Enum.ToObject(typeof(StatType), values.GetValue(values.GetUpperBound(0)));
+		// COUNT IS TEMP FOR DEBUG! just want to make sure we don't loop forever.
 		int count = 0;
-		while (stat != StatType.MAXHP && count < 20) {
+		// loop and increment the stat type back until we hit the NONE type and we are done.
+		while (stat != StatType.NONE && count < 20) {
 			Debug.Log("Rolling for state type"+stat.ToString());
-			this.baseStats[(int)stat] = rollDiceDropLowest(4, 6, 1);
-			stat++;
+			this.baseStats[stat] = rollDiceDropLowest(4, 6, 1);
+			stat--;
+			count++;
+		}
+	}
+
+	// set all base stats to zero
+	public void zeroBaseStats()
+	{
+		// get the values of the enum so we may iterate through them
+		var values = Enum.GetValues(typeof(StatType));
+		// set the value to the last in the enum
+		StatType stat = (StatType) Enum.ToObject(typeof(StatType), values.GetValue(values.GetUpperBound(0)));
+		// COUNT IS TEMP FOR DEBUG! just want to make sure we don't loop forever.
+		int count = 0;
+		// loop and increment the stat type back until we hit the NONE type and we are done.
+		while (stat != StatType.NONE && count < 20) {
+			Debug.Log("Rolling for state type"+stat.ToString());
+			this.baseStats[stat] = rollDiceDropLowest(4, 6, 1);
+			stat--;
 			count++;
 		}
 	}
